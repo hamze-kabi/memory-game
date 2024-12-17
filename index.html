@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Game</title>
+  <meta name="Description / Author" description="A frontend practice project with the focus on user interactivity using javascript">
+  <link rel="stylesheet" href="styles\css reset.css">
+  <link rel="stylesheet" href="styles\indexstyle.css">
+</head>  
+<body>
+  <h1>Memory Game</h1>
+  <form action="gamepage.html" id="setting-form">
+    <p>Select theme</p>
+    <div class="labels">
+      <label for="numbers">
+        <input type="radio" id="numbers" name="theme" value="numbers"> Numbers
+      </label>
+      <label for="icons">
+        <input type="radio" id="icons" name="theme" value="icons"> Icons
+      </label>
+    </div>
+    <p>Select Number of Players</p>
+    <div class="labels">
+      <label for="1">
+        <input type="radio" id="1" name="number-of-players" value="1"> 1
+      </label>
+      <label for="2">
+        <input type="radio" id="2" name="number-of-players" value="2"> 2
+      </label>
+      <label for="3">
+        <input type="radio" id="3" name="number-of-players" value="3"> 3
+      </label>
+      <label for="4">
+        <input type="radio" id="4" name="number-of-players" value="4"> 4
+      </label>  
+    </div>
+    <p>Select Grid Size</p>
+    <div class="labels">
+      <label for="4x4">
+        <input type="radio" id="4x4" name="grid-size" value="4x4"> 4x4
+      </label>
+      <label for="6x6">
+        <input type="radio" id="6x6" name="grid-size" value="6x6"> 6x6
+      </label>
+    </div>
+    <input id="submit" type="submit" value="submit">
+  </form>
+  <script src="scripts\start-page-script.js"></script>
+</body>
+</html>

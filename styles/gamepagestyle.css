@@ -1,0 +1,48 @@
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 2rem;
+}
+
+#top-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#buttons {
+  display: flex;
+  gap: 1rem;
+  font-size: 1.4rem;
+}
+
+button {
+  border: none;
+  border-radius: 2rem;
+  width: 9rem;
+  max-width: 50%;
+  font-weight: 700;
+  transition: translate 10s;
+}
+
+button:active {
+  translate: 0rem 20rem;
+}
+
+#restart-btn {
+  background-color: rgb(253, 162, 20);
+  color: white;
+  transition: background-color 0.5s;
+}
+
+#restart-btn:hover {
+  background-color: rgb(253, 220, 20);
+}
+
+
+h1 {
+  font-size: 3rem;
+  align-items: center;
+}

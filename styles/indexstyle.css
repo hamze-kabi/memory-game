@@ -1,0 +1,112 @@
+
+:root {
+  --dark: rgb(21, 41, 56);
+}
+
+body {
+  background-color: var(--dark);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#start-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  color: slategray;
+  margin-bottom: 2rem;
+}
+
+p {
+  color: silver;
+  font-size: large;
+}
+
+.btn-section {
+  margin: 0.5rem auto;
+}
+
+form p {
+  text-align: center;
+}
+
+.labels {
+  display: flex;
+  justify-content: center;
+}
+
+input[type="radio"] {
+  display: none; /* Hide radio buttons */
+}
+
+label {
+  cursor: pointer;
+  padding: 0.7rem;
+  margin: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  display: inline-block;
+  background-color: white; /* Default background color */
+}
+
+label:has(input[type="radio"]:checked) {
+  background-color: green; /* Change background color when selected */
+  color: white; /* Optional: Change text color for better visibility */
+}
+
+
+/* #submit {
+  display: block;
+} */
+
+#submit {
+  margin: 1rem 25% auto;
+  align-items: center;
+  appearance: none;
+  background-color: #FCFCFD;
+  border-radius: 0.25rem;
+  border-width: 0;
+  box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,rgba(45, 35, 66, 0.3) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
+  box-sizing: border-box;
+  color: #36395A;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: "JetBrains Mono",monospace;
+  height: 3rem;
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  overflow: hidden;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow .15s,transform .15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow,transform;
+  font-size: 1.125rem;
+}
+
+#submit:focus {
+  box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+}
+
+#submit:hover {
+  box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+  transform: translateY(-2px);
+}
+
+#submit:active {
+  box-shadow: #D6D6E7 0 3px 7px inset;
+  transform: translateY(2px);
+}
