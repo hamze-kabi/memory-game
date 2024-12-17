@@ -2,7 +2,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  margin: 2rem;
+  margin: 1rem;
 }
 
 #top-bar {
@@ -45,4 +45,15 @@ button:active {
 h1 {
   font-size: 3rem;
   align-items: center;
+}
+
+#cells {
+  display: grid;
+}
+
+.cell {
+  width: 20px;
+  height: 20px;
+  margin: 20px;
+  background-color: blueviolet;
 }

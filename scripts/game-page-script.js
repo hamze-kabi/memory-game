@@ -1,5 +1,6 @@
 "use strict"
 
+// addresses of icons
 const icons = [
   "E:\coding\ht\memory-game\assets\icons\bagpipes_wind_instrument_musical_music_cultures_bagpipe_icon_262832.png",
   "E:\coding\ht\memory-game\assets\icons\beat_tempo_music_rhythm_metronome_icon_262835.png",
@@ -19,15 +20,9 @@ const icons = [
   "E:\coding\ht\memory-game\assets\icons\music_note_musical_book_stand_icon_262868.png",
   "E:\coding\ht\memory-game\assets\icons\music_string_chinese_instrument_musical_guzheng_icon_262836.png",
   "E:\coding\ht\memory-game\assets\icons\musical_djembe_cultures_music_percussion_instrument_drum_icon_262862.png",
-  "E:\coding\ht\memory-game\assets\icons\musical_music_orchestra_instrument_flute_icon_262878.png",
-  "E:\coding\ht\memory-game\assets\icons\orchestra_musical_instrument_wind_music_saxophone_icon_262833.png",
-  "E:\coding\ht\memory-game\assets\icons\orchestra_musical_instrument_wind_music_trumpet_icon_262837.png",
-  "E:\coding\ht\memory-game\assets\icons\organs_piano_music_keyboard_icon_262860.png",
-  "E:\coding\ht\memory-game\assets\icons\percussion_orchestra_triangle_music_instrument_icon_262872.png",
-  "E:\coding\ht\memory-game\assets\icons\song_disc_compact_music_note_musical_cd_icon_262858.png",
-  "E:\coding\ht\memory-game\assets\icons\woofer_speaker_audio_system_music_sound_subwoofer_icon_262859.png"
-]
+];
 
+// gets settings parameters sent by index.html
 function getQueryParam() {
   const params = {}
   const queryString = window.location.search.slice(1)
@@ -37,6 +32,61 @@ function getQueryParam() {
     params[encodeURIComponent(key)] = encodeURIComponent(value || "")
   })
   return params
+};
+
+// saves the received parameter in params constant
+const params = getQueryParam();
+
+// creates cells based on params.theme and params.gridSize
+function createCell() {
+  const theme = params.theme
+
+  let gridSize;
+  let multiplier;
+  if (params.gridSize == "4x4") {
+    gridSize = 4
+    multiplier = 2
+  } else if (params.gridSize == "6x6") {
+    gridSize = 6
+    multiplier = 3
+  }
+
+  const cells = document.getElementById("cells")
+
+  if (gridSize == 4) {
+    cells.style.gridTemplateAreas = 
+    `
+      "cell0 cell1 cell2 cell3"
+      "cell4 cell5 cell6 cell7"
+      "cell8 cell9 cell10 cell11"
+      "cell12 cell13 cell14 cell15"
+    `
+
+  } else if (gridSize == 6) {
+    cells.style.gridTemplateAreas = 
+    `
+      "cell0 cell1 cell2 cell3 cell4 cell5"
+      "cell6 cell7 cell8 cell9 cell10 cell11"
+      "cell12 cell13 cell14 cell15 cell16 cell17"
+      "cell18 cell19 cell20 cell21 cell22 cell23"
+      "cell24 cell25 cell26 cell27 cell28 cell29"
+      "cell30 cell31 cell32 cell33 cell34 cell35"
+    `
+  }
+  console.log(window.getComputedStyle(cells).getPropertyValue('grid-template-areas'));
+
+  let cellId = -1
+  for (let n = 1; n<=gridSize * multiplier; n++) {  // gridSize * multiplier equals number of cells to be created
+    for (let m = 0; m <= 1; m++) {
+      // creating cells
+      cellId += 1
+      let cell = document.createElement("div")
+      cell.classList.add("cell")
+      cell.id = `${cellId}`
+      cell.style.gridArea = `cell${cellId}`
+      cells.appendChild(cell)
+    }
+  }
 }
 
-const params = getQueryParam()
+createCell()
