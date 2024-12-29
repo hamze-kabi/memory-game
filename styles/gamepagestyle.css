@@ -2,7 +2,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  margin: 1rem;
+  width: 100vw;
 }
 
 #top-bar {
@@ -10,6 +10,8 @@ body {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem
 }
 
 #buttons {
@@ -21,8 +23,8 @@ body {
 button {
   border: none;
   border-radius: 2rem;
-  width: 9rem;
-  max-width: 50%;
+  width: clamp(9rem, 15vw, 20vw);
+  height: clamp(2.5rem, 5vh, 10vh);
   font-weight: 700;
   transition: translate 10s;
 }
@@ -43,17 +45,41 @@ button:active {
 
 
 h1 {
-  font-size: 3rem;
+  font-size: clamp(2.5rem ,4vw, 8vw);
   align-items: center;
+  margin-top: 1rem;
 }
 
 #cells {
   display: grid;
+  justify-content: space-evenly;
+  row-gap: 3vw;
+  margin-top: 1rem;
 }
 
 .cell {
-  width: 20px;
-  height: 20px;
-  margin: 20px;
-  background-color: blueviolet;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(2.5rem, 15vw, 90%);
+  font-family: 'Courier New', Courier, monospace;
+  background-color:wheat;
+  width: clamp(3rem, 8vh, 15rem);
+  height: clamp(3.5rem, 8vh, 25vh);
+  border-radius: 50%;
+}
+
+
+.cell-overlay {
+  position: absolute;
+  width: clamp(3rem, 8vh, 15rem);
+  height: clamp(3.5rem, 8vh, 25vh);
+  border-radius: 50%;
+  background-color: blue;
+  transition: width 0.2s, height 0.2s;
+}
+
+.cell-overlay-active {
+  width: 0;
+  height: 0;
 }
