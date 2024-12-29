@@ -79,7 +79,11 @@ h1 {
   transition: width 0.2s, height 0.2s;
 }
 
-.cell-overlay-active {
+.cell-overlay-remove {
   width: 0;
   height: 0;
+}
+
+.cell-icon {
+  scale: 0.7;
 }

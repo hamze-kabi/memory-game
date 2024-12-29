@@ -2,24 +2,24 @@
 
 // addresses of icons
 const icons = [
-  "E:/coding/ht/memory-game/assets/icons/bagpipes_wind_instrument_musical_music_cultures_bagpipe_icon_262832.png",
-  "E:/coding/ht/memory-game/assets/icons/beat_tempo_music_rhythm_metronome_icon_262835.png",
-  "E:/coding/ht/memory-game/assets/icons/chimes_music_percussion_instrument_musical_orchestra_icon_262854.png",
-  "E:/coding/ht/memory-game/assets/icons/folk_musical_instrument_wind_harmonica_music_icon_262877.png",
-  "E:/coding/ht/memory-game/assets/icons/headphones_music_audio_electronics_icon_262861.png",
-  "E:/coding/ht/memory-game/assets/icons/instrument_orchestra_music_percussion_musical_conga_icon_262856.png",
-  "E:/coding/ht/memory-game/assets/icons/instrument_string_bass_guitar_electric_rock_music_icon_262845.png",
-  "E:/coding/ht/memory-game/assets/icons/keyboard_musical_instrument_music_organ_piano_icon_262839.png",
-  "E:/coding/ht/memory-game/assets/icons/maracas_latin_music_pair_musical_instrument_icon_262852.png",
-  "E:/coding/ht/memory-game/assets/icons/marimba_orchestra_instrument_idiophone_music_icon_262844.png",
-  "E:/coding/ht/memory-game/assets/icons/mesoamerican_instrument_musical_music_cultures_ocarina_icon_262863.png",
-  "E:/coding/ht/memory-game/assets/icons/music_folk_orchestra_cultures_instrument_musical_accordion_icon_262853.png",
-  "E:/coding/ht/memory-game/assets/icons/music_instrument_percussion_drum_snare_icon_262876.png",
-  "E:/coding/ht/memory-game/assets/icons/music_lyre_musical_instrument_string_orchestra_icon_262834.png",
-  "E:/coding/ht/memory-game/assets/icons/music_microphone_sing_stand_mic_electronics_icon_262873.png",
-  "E:/coding/ht/memory-game/assets/icons/music_note_musical_book_stand_icon_262868.png",
-  "E:/coding/ht/memory-game/assets/icons/music_string_chinese_instrument_musical_guzheng_icon_262836.png",
-  "E:/coding/ht/memory-game/assets/icons/musical_djembe_cultures_music_percussion_instrument_drum_icon_262862.png",
+  "assets/icons/bagpipes_wind_instrument_musical_music_cultures_bagpipe_icon_262832.png",
+  "assets/icons/beat_tempo_music_rhythm_metronome_icon_262835.png",
+  "assets/icons/chimes_music_percussion_instrument_musical_orchestra_icon_262854.png",
+  "assets/icons/folk_musical_instrument_wind_harmonica_music_icon_262877.png",
+  "assets/icons/headphones_music_audio_electronics_icon_262861.png",
+  "assets/icons/instrument_orchestra_music_percussion_musical_conga_icon_262856.png",
+  "assets/icons/instrument_string_bass_guitar_electric_rock_music_icon_262845.png",
+  "assets/icons/keyboard_musical_instrument_music_organ_piano_icon_262839.png",
+  "assets/icons/maracas_latin_music_pair_musical_instrument_icon_262852.png",
+  "assets/icons/marimba_orchestra_instrument_idiophone_music_icon_262844.png",
+  "assets/icons/mesoamerican_instrument_musical_music_cultures_ocarina_icon_262863.png",
+  "assets/icons/music_folk_orchestra_cultures_instrument_musical_accordion_icon_262853.png",
+  "assets/icons/music_instrument_percussion_drum_snare_icon_262876.png",
+  "assets/icons/music_lyre_musical_instrument_string_orchestra_icon_262834.png",
+  "assets/icons/music_microphone_sing_stand_mic_electronics_icon_262873.png",
+  "assets/icons/music_note_musical_book_stand_icon_262868.png",
+  "assets/icons/music_string_chinese_instrument_musical_guzheng_icon_262836.png",
+  "assets/icons/musical_djembe_cultures_music_percussion_instrument_drum_icon_262862.png",
 ];
 
 
@@ -110,7 +110,6 @@ function themeCells() {
       cellValueArr.push(i)
     }
   } else if (theme == "icons") {
-    console.log(numberOfCells)
     for (let i = 0; i <= (numberOfCells/2) - 1; i++) {
       cellValueArr.push(icons[i])
     }
@@ -119,10 +118,14 @@ function themeCells() {
 
   // setting value for cells in randomly
   for (let i = 0; i <= numberOfCells - 1; i++) {
-    shuffledCells[i].innerHTML = cellValueArr[i]
+    if (theme == "numbers") {
+      shuffledCells[i].innerHTML = cellValueArr[i]
+    } else if (theme == "icons") {
+      shuffledCells[i].innerHTML = `<img class="cell-icon" src="${cellValueArr[i]}" alt="${cellValueArr[i]}">`
+    }
   }
 }
-
+// <img src="" alt="">
 // creating overlay on every cell
 function createCellOverlay () {
   document.querySelectorAll(".cell").forEach(el => {
@@ -133,13 +136,39 @@ function createCellOverlay () {
   })
 }
 
-// hides overlay of cell when clicked
+// removes overlay of cell when clicked
 function hideOverlay() {
-  document.querySelectorAll(".cell-overlay").forEach(el => {
-    el.addEventListener("click", function() {
-      el.classList.add("cell-overlay-active")
+  document.querySelectorAll(".cell-overlay").forEach(cellOverlay => {
+    cellOverlay.addEventListener("click", function() {
+      cellOverlay.classList.add("cell-overlay-remove")
+      isSimilar(cellOverlay)
     })
   })
+}
+
+let selectedCells = []
+let selectedIds = []
+function isSimilar(cellOverlay) {
+  // extracting content of clicked cell
+  let cellContent;
+  if (params.theme == "numbers") {
+    cellContent = cellOverlay.parentElement.textContent;
+  } else if (params.theme == "icons") {
+    cellContent = cellOverlay.previousElementSibling.src
+  }
+
+  // if nothing is clicked, newly clicked cell gets pushed to selectedCells
+  // if first cell is already clicked => checking the second one for similar pair
+  if (selectedCells.length == 0) {
+    selectedCells.push(cellContent)
+    selectedIds.push(cellOverlay.id)
+  } else if (selectedCells.length == 1) {
+    if (selectedCells[0] != cellContent) {    //////////////////////////////////////// fix it
+      // document.getElementById(cellOverlay.id).classList.remove("cell-overlay-remove")
+    } else {
+
+    }
+  }
 }
 
 // Call functions section
