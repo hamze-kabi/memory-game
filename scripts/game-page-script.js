@@ -141,10 +141,6 @@ function hideOverlay() {
   document.querySelectorAll(".cell-overlay").forEach(cellOverlay => {
     cellOverlay.addEventListener("click", function() {
       cellOverlay.classList.add("cell-overlay-remove")
-
-      let similarCells;
-      similarCells = checkSimilarity(cellOverlay)
-      console.log(similarCells)
     })
   })
 }
@@ -153,26 +149,30 @@ function hideOverlay() {
 let selectedCells = []
 // this function gets called from hideOverlay()
 function checkSimilarity(cellOverlay) {
+  document.querySelectorAll(".cell-overlay").forEach(cellOverlay => {
+    cellOverlay.addEventListener("click", function() {
+        // extracting selected cell
+      let selectedCell = cellOverlay.parentElement;
 
-  // extracting selected cell
-  let selectedCell = cellOverlay.parentElement;
-
-  // if no cell is clicked, newly clicked cell gets pushed to selectedCells
-  // if a cell is already clicked => checking the second one for similarity
-  if (selectedCells.length == 0) {
-    selectedCells.push(selectedCell)
-  } else if (selectedCells.length == 1) {
-    selectedCells.push(selectedCell)
-    let cellsContents = extractCellsContents()
-    if (cellsContents[0] == cellsContents[1]) {
-      return selectedCells
-    } else {
-      return null
-    }
-  } else if (selectedCells.length == 2) {
-    selectedCells = []
-    selectedCells.push(selectedCell)
-  }
+      // if no cell is clicked, newly clicked cell gets pushed to selectedCells
+      // if a cell is already clicked => checking the second one for similarity
+      if (selectedCells.length == 0) {
+        selectedCells.push(selectedCell)
+      } else if (selectedCells.length == 1) {
+        selectedCells.push(selectedCell)
+        let cellsContents = extractCellsContents()
+        console.log(selectedCells)
+        if (cellsContents[0] == cellsContents[1]) {
+          return selectedCells
+        } else {
+          return null
+        }
+      } else if (selectedCells.length == 2) {
+        selectedCells = []
+        selectedCells.push(selectedCell)
+      }
+    })
+  })
 }
 
 // extracting contents of selctedCells
@@ -196,3 +196,9 @@ createCell()
 themeCells()
 createCellOverlay()
 hideOverlay()
+let similarCells = checkSimilarity()
+if (similarCells) {
+  console.log(true)
+} else {
+  console.log(false)
+}
