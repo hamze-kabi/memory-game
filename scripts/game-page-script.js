@@ -147,8 +147,7 @@ function hideOverlay() {
 
 
 let selectedCells = []
-// this function gets called from hideOverlay()
-function checkSimilarity(cellOverlay) {
+function extractPairSelectedCells() {
   document.querySelectorAll(".cell-overlay").forEach(cellOverlay => {
     cellOverlay.addEventListener("click", function() {
         // extracting selected cell
@@ -156,17 +155,8 @@ function checkSimilarity(cellOverlay) {
 
       // if no cell is clicked, newly clicked cell gets pushed to selectedCells
       // if a cell is already clicked => checking the second one for similarity
-      if (selectedCells.length == 0) {
+      if ([0, 1].includes(selectedCells.length)) {
         selectedCells.push(selectedCell)
-      } else if (selectedCells.length == 1) {
-        selectedCells.push(selectedCell)
-        let cellsContents = extractCellsContents()
-        console.log(selectedCells)
-        if (cellsContents[0] == cellsContents[1]) {
-          return selectedCells
-        } else {
-          return null
-        }
       } else if (selectedCells.length == 2) {
         selectedCells = []
         selectedCells.push(selectedCell)
@@ -196,9 +186,6 @@ createCell()
 themeCells()
 createCellOverlay()
 hideOverlay()
-let similarCells = checkSimilarity()
-if (similarCells) {
-  console.log(true)
-} else {
-  console.log(false)
-}
+extractPairSelectedCells()
+// ///////////////////////////////// create a function which checks selectedcells, use Custom Events to couple the two functions
+// to avoid calling one fron inside the other one
