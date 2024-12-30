@@ -141,35 +141,53 @@ function hideOverlay() {
   document.querySelectorAll(".cell-overlay").forEach(cellOverlay => {
     cellOverlay.addEventListener("click", function() {
       cellOverlay.classList.add("cell-overlay-remove")
-      isSimilar(cellOverlay)
+
+      let similarCells;
+      similarCells = checkSimilarity(cellOverlay)
+      console.log(similarCells)
     })
   })
 }
 
+
 let selectedCells = []
-let selectedIds = []
-function isSimilar(cellOverlay) {
-  // extracting content of clicked cell
-  let cellContent;
-  if (params.theme == "numbers") {
-    cellContent = cellOverlay.parentElement.textContent;
-  } else if (params.theme == "icons") {
-    cellContent = cellOverlay.previousElementSibling.src
-  }
+// this function gets called from hideOverlay()
+function checkSimilarity(cellOverlay) {
 
-  // if nothing is clicked, newly clicked cell gets pushed to selectedCells
-  // if first cell is already clicked => checking the second one for similar pair
+  // extracting selected cell
+  let selectedCell = cellOverlay.parentElement;
+
+  // if no cell is clicked, newly clicked cell gets pushed to selectedCells
+  // if a cell is already clicked => checking the second one for similarity
   if (selectedCells.length == 0) {
-    selectedCells.push(cellContent)
-    selectedIds.push(cellOverlay.id)
+    selectedCells.push(selectedCell)
   } else if (selectedCells.length == 1) {
-    if (selectedCells[0] != cellContent) {    //////////////////////////////////////// fix it
-      // document.getElementById(cellOverlay.id).classList.remove("cell-overlay-remove")
+    selectedCells.push(selectedCell)
+    let cellsContents = extractCellsContents()
+    if (cellsContents[0] == cellsContents[1]) {
+      return selectedCells
     } else {
-
+      return null
     }
+  } else if (selectedCells.length == 2) {
+    selectedCells = []
+    selectedCells.push(selectedCell)
   }
 }
+
+// extracting contents of selctedCells
+function extractCellsContents() {
+  let cellsContents = []
+  for (let cell of selectedCells) {
+    if (params.theme == "numbers") {
+      cellsContents.push(cell.textContent)
+    } else if (params.theme == "icons") {
+      cellsContents.push(cell.getElementsByTagName("img")[0].src)
+    }
+  }
+  return cellsContents
+}
+
 
 // Call functions section
 // saves the received parameter in params constant
