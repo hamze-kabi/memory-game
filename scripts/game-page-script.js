@@ -24,6 +24,8 @@ const icons = [
 
 let selectedCells = []  // cells that get selected by mouse click
 let selectedCellsContents = []  // content of cells that get selected by mouse click
+let countedMoves = 0  // number of moves player has played
+let seconds = 0 // to be converted to 00:00:00 and displayed
 
 // gets settings parameters sent by index.html
 function getQueryParam() {
@@ -182,6 +184,7 @@ function extractCellsContents() {
 }
 
 function checkSimilarity() {
+  document.dispatchEvent(new Event("call-countMoves()"))
   if (selectedCellsContents[0] != selectedCellsContents[1]) {
     // console.log(selectedCellsContents)
     for (let cell of selectedCells) {
@@ -198,6 +201,31 @@ function checkSimilarity() {
   }
 }
 
+// count number of moves player has played
+function countMoves() {
+  countedMoves += 1
+  document.getElementById("moves-number").innerHTML = countedMoves
+}
+
+function startTimer() {
+  setInterval(() => {
+    seconds++
+    let formattedTime = formatTimer()
+    displayTimer(formattedTime)
+  }, 1000)
+}
+
+function formatTimer() {
+  let hrs = Math.floor(seconds / 3600)
+  let mins = Math.floor((seconds % 3600) / 60)
+  let secsRemaining = Math.floor(seconds % 60)
+  return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secsRemaining.toString().padStart(2, '0')}`;
+}
+
+function displayTimer(formattedTime) {
+  document.getElementById("timer-number").innerHTML = formattedTime
+}
+
 // Call functions section
 // saves the received parameter in params constant
 const params = getQueryParam();
@@ -207,4 +235,6 @@ createCellOverlay()
 hideOverlay()
 document.addEventListener("call-extractCellsContents()", extractCellsContents)  // related to dispatchEvent inside extractPairSelectedCells()
 document.addEventListener("call-checkSimilarity()", checkSimilarity)  // related to dispatchEvent inside extractCellsContents()
+document.addEventListener("call-countMoves()", countMoves)  // related to dispatchEvent inside checkSimilarity()
 extractPairSelectedCells()
+startTimer()
