@@ -186,7 +186,6 @@ function extractCellsContents() {
 function checkSimilarity() {
   document.dispatchEvent(new Event("call-countMoves()"))
   if (selectedCellsContents[0] != selectedCellsContents[1]) {
-    // console.log(selectedCellsContents)
     for (let cell of selectedCells) {
       setTimeout(() => {
         let cellOverlay;
@@ -198,6 +197,8 @@ function checkSimilarity() {
         cellOverlay.classList.remove("cell-overlay-remove")
       }, 500)
     }
+  } else {
+    checkWin()
   }
 }
 
@@ -226,6 +227,16 @@ function displayTimer(formattedTime) {
   document.getElementById("timer-number").innerHTML = formattedTime
 }
 
+function checkWin() {
+  let numberOfAllCells = document.querySelectorAll(".cell-overlay").length
+  let numberOfrevealedCells = document.querySelectorAll(".cell-overlay-remove").length
+  console.log(numberOfAllCells)
+  console.log(numberOfrevealedCells)
+  if (numberOfAllCells == numberOfrevealedCells) {
+    alert("you won")
+  }
+}
+
 // Call functions section
 // saves the received parameter in params constant
 const params = getQueryParam();
@@ -238,3 +249,4 @@ document.addEventListener("call-checkSimilarity()", checkSimilarity)  // related
 document.addEventListener("call-countMoves()", countMoves)  // related to dispatchEvent inside checkSimilarity()
 extractPairSelectedCells()
 startTimer()
+document.addEventListener("call-checkWin()", checkWin)  // related to dispatchEvent inside checkSimilarity()
