@@ -22,6 +22,8 @@ const icons = [
   "assets/icons/musical_djembe_cultures_music_percussion_instrument_drum_icon_262862.png",
 ];
 
+let selectedCells = []  // cells that get selected by mouse click
+let selectedCellsContents = []  // content of cells that get selected by mouse click
 
 // gets settings parameters sent by index.html
 function getQueryParam() {
@@ -145,21 +147,21 @@ function hideOverlay() {
   })
 }
 
-
-let selectedCells = []
 function extractPairSelectedCells() {
   document.querySelectorAll(".cell-overlay").forEach(cellOverlay => {
     cellOverlay.addEventListener("click", function() {
         // extracting selected cell
-      let selectedCell = cellOverlay.parentElement;
+      let selectedCell = cellOverlay.parentElement; 
 
       // if no cell is clicked, newly clicked cell gets pushed to selectedCells
       // if a cell is already clicked => checking the second one for similarity
-      if ([0, 1].includes(selectedCells.length)) {
+      if (selectedCells.length == 0) {
         selectedCells.push(selectedCell)
-      } else if (selectedCells.length == 2) {
+      } else if (selectedCells.length == 1) {
+        selectedCells.push(selectedCell)
+        document.dispatchEvent(new Event("call-extractCellsContents()"))
         selectedCells = []
-        selectedCells.push(selectedCell)
+        selectedCellsContents = []
       }
     })
   })
@@ -167,17 +169,34 @@ function extractPairSelectedCells() {
 
 // extracting contents of selctedCells
 function extractCellsContents() {
-  let cellsContents = []
   for (let cell of selectedCells) {
     if (params.theme == "numbers") {
-      cellsContents.push(cell.textContent)
+      selectedCellsContents.push(cell.textContent)
     } else if (params.theme == "icons") {
-      cellsContents.push(cell.getElementsByTagName("img")[0].src)
+      selectedCellsContents.push(cell.getElementsByTagName("img")[0].src)
     }
   }
-  return cellsContents
+  // this dispatchevent causes checkSimilarity() to get called without directly getting called from inside of current function
+  // helps modularity
+  document.dispatchEvent(new Event("call-checkSimilarity()"))
 }
 
+function checkSimilarity() {
+  if (selectedCellsContents[0] != selectedCellsContents[1]) {
+    // console.log(selectedCellsContents)
+    for (let cell of selectedCells) {
+      setTimeout(() => {
+        let cellOverlay;
+        if (params.theme == "numbers") {
+          cellOverlay = cell.children[0]
+        } else if (params.theme == "icons") {
+          cellOverlay = cell.children[1]
+        }
+        cellOverlay.classList.remove("cell-overlay-remove")
+      }, 500)
+    }
+  }
+}
 
 // Call functions section
 // saves the received parameter in params constant
@@ -186,6 +205,6 @@ createCell()
 themeCells()
 createCellOverlay()
 hideOverlay()
+document.addEventListener("call-extractCellsContents()", extractCellsContents)  // related to dispatchEvent inside extractPairSelectedCells()
+document.addEventListener("call-checkSimilarity()", checkSimilarity)  // related to dispatchEvent inside extractCellsContents()
 extractPairSelectedCells()
-// ///////////////////////////////// create a function which checks selectedcells, use Custom Events to couple the two functions
-// to avoid calling one fron inside the other one
