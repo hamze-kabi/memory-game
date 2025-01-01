@@ -1,5 +1,11 @@
 "use strict"
 
+let selectedCells = []  // cells that get selected by mouse click
+let selectedCellsContents = []  // content of cells that get selected by mouse click
+let countedMoves = 0  // number of moves player has played
+let seconds = 0 // to be converted to 00:00:00 and displayed
+let currentPlayer = null  // current player to calculate its stats
+
 // addresses of icons
 const icons = [
   "assets/icons/bagpipes_wind_instrument_musical_music_cultures_bagpipe_icon_262832.png",
@@ -21,11 +27,6 @@ const icons = [
   "assets/icons/music_string_chinese_instrument_musical_guzheng_icon_262836.png",
   "assets/icons/musical_djembe_cultures_music_percussion_instrument_drum_icon_262862.png",
 ];
-
-let selectedCells = []  // cells that get selected by mouse click
-let selectedCellsContents = []  // content of cells that get selected by mouse click
-let countedMoves = 0  // number of moves player has played
-let seconds = 0 // to be converted to 00:00:00 and displayed
 
 // gets settings parameters sent by index.html
 function getQueryParam() {
@@ -50,7 +51,6 @@ function createCell() {
     gridSize = 6
     multiplier = 3
   }
-
   const cells = document.getElementById("cells")
 
   if (gridSize == 4) {
@@ -202,13 +202,26 @@ function checkSimilarity() {
   }
 }
 
+function displayPlayersStats() {
+  for (let i = 1; i <= params.numberOfPlayers; i++) {
+    document.getElementById(`player-${i}-row`).style.display = "flex"
+  }
+}
+
+function selectCurrentPlayer() {
+  if (!currentPlayer || currentPlayer == 4) {
+    currentPlayer = 0
+  }
+  currentPlayer += 1
+}
+
 // count number of moves player has played
 function countMoves() {
   countedMoves += 1
   document.getElementById("moves-number").innerHTML = countedMoves
 }
 
-function startTimer() {
+function timer() {
   setInterval(() => {
     seconds++
     let formattedTime = formatTimer()
@@ -246,7 +259,9 @@ createCellOverlay()
 hideOverlay()
 document.addEventListener("call-extractCellsContents()", extractCellsContents)  // related to dispatchEvent inside extractPairSelectedCells()
 document.addEventListener("call-checkSimilarity()", checkSimilarity)  // related to dispatchEvent inside extractCellsContents()
+displayPlayersStats()
 document.addEventListener("call-countMoves()", countMoves)  // related to dispatchEvent inside checkSimilarity()
 extractPairSelectedCells()
-startTimer()
+selectCurrentPlayer()
+timer()
 document.addEventListener("call-checkWin()", checkWin)  // related to dispatchEvent inside checkSimilarity()
