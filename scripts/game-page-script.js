@@ -2,7 +2,6 @@
 
 let selectedCells = []  // cells that get selected by mouse click
 let selectedCellsContents = []  // content of cells that get selected by mouse click
-let countedMoves = 0  // number of moves player has played
 let seconds = 0 // to be converted to 00:00:00 and displayed
 let currentPlayer = null  // current player to calculate its stats
 
@@ -140,6 +139,25 @@ function createCellOverlay () {
   })
 }
 
+// self explainatory
+function selectCurrentPlayer() {
+  if (!currentPlayer || currentPlayer == 4) {
+    currentPlayer = 0
+  }
+  currentPlayer += 1
+}
+
+// changes color of related .player-p to indicate the current player
+function highlightCurrentPlayer() {
+  for (let i = 1; i <= numberOfPlayers; i++) {
+    if (i == currentPlayer) {
+      document.getElementById(`player-${i}-p`).style.color = rgb(62, 123, 39)
+    } else {
+      document.getElementById(`player-${i}-p`).style.color = black      
+    }
+  }
+}
+
 // removes overlay of cell when clicked
 function hideOverlay() {
   document.querySelectorAll(".cell-overlay").forEach(cellOverlay => {
@@ -149,6 +167,7 @@ function hideOverlay() {
   })
 }
 
+// extracting the two selected cells. their contents will be extracted and compared in next functions
 function extractPairSelectedCells() {
   document.querySelectorAll(".cell-overlay").forEach(cellOverlay => {
     cellOverlay.addEventListener("click", function() {
@@ -183,7 +202,10 @@ function extractCellsContents() {
   document.dispatchEvent(new Event("call-checkSimilarity()"))
 }
 
+// compairing the two selected cells for their similarity
 function checkSimilarity() {
+  document.dispatchEvent(new Event("call-selectCurrentPlayer()"))
+  document.dispatchEvent(new Event("call-highlightCurrentPlayer()"))
   document.dispatchEvent(new Event("call-countMoves()"))
   if (selectedCellsContents[0] != selectedCellsContents[1]) {
     for (let cell of selectedCells) {
@@ -202,23 +224,17 @@ function checkSimilarity() {
   }
 }
 
+// player stats (moves and timer) are display: none by default, their display change to flex based on the number of players selected on index.html
 function displayPlayersStats() {
   for (let i = 1; i <= params.numberOfPlayers; i++) {
     document.getElementById(`player-${i}-row`).style.display = "flex"
   }
 }
 
-function selectCurrentPlayer() {
-  if (!currentPlayer || currentPlayer == 4) {
-    currentPlayer = 0
-  }
-  currentPlayer += 1
-}
-
 // count number of moves player has played
 function countMoves() {
-  countedMoves += 1
-  document.getElementById("moves-number").innerHTML = countedMoves
+  document.getElementById(`moves-number-${currentPlayer}`).innerHTML =
+    +document.getElementById(`moves-number-${currentPlayer}`).innerHTML + 1
 }
 
 function timer() {
@@ -260,8 +276,9 @@ hideOverlay()
 document.addEventListener("call-extractCellsContents()", extractCellsContents)  // related to dispatchEvent inside extractPairSelectedCells()
 document.addEventListener("call-checkSimilarity()", checkSimilarity)  // related to dispatchEvent inside extractCellsContents()
 displayPlayersStats()
+document.addEventListener("call-selectCurrentPlayer()", selectCurrentPlayer)  // related to dispatchEvent inside checkSimilarity()
+document.addEventListener("call-highlightCurrentPlayer()", highlightCurrentPlayer)  // related to dispatchEvent inside checkSimilarity()
 document.addEventListener("call-countMoves()", countMoves)  // related to dispatchEvent inside checkSimilarity()
 extractPairSelectedCells()
-selectCurrentPlayer()
 timer()
 document.addEventListener("call-checkWin()", checkWin)  // related to dispatchEvent inside checkSimilarity()
