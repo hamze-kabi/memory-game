@@ -10,9 +10,10 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  font-size: clamp(1rem, 3vw, 2rem);
 }
 
-#start-box {
+#setting-form {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -25,7 +26,7 @@ h1 {
 
 p {
   color: silver;
-  font-size: large;
+  /* font-size: large; */
 }
 
 .btn-section {
@@ -94,7 +95,7 @@ label:has(input[type="radio"]:checked) {
   touch-action: manipulation;
   white-space: nowrap;
   will-change: box-shadow,transform;
-  font-size: 1.125rem;
+  /* font-size: clamp(1.5rem, 5vw, 3.5rem); */
 }
 
 #submit:focus {

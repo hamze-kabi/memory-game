@@ -1,6 +1,7 @@
 "use strict"
 
 document.getElementById("setting-form").addEventListener("submit", function(event) {
+  console.log("setting-form submitted")
   event.preventDefault()
 
   const formData = new FormData(this)

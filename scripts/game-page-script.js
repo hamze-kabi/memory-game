@@ -4,6 +4,9 @@ let selectedCells = []  // cells that get selected by mouse click
 let selectedCellsContents = []  // content of cells that get selected by mouse click
 let seconds = 0 // to be converted to 00:00:00 and displayed
 let currentPlayer = null  // current player to calculate its stats
+let timers = {} // an object containing timer of each gamer
+let gameStarted = false // as soon as the first player clicks, it converts to true and timer starts working
+let intervalId;
 
 // addresses of icons
 const icons = [
@@ -29,6 +32,7 @@ const icons = [
 
 // gets settings parameters sent by index.html
 function getQueryParam() {
+  console.log("getQueryParam() called, getting params")
   const params = {}
   const queryString = window.location.search.slice(1)
   const pairs = queryString.split("&")
@@ -39,10 +43,11 @@ function getQueryParam() {
   return params
 };
 
-// creates cells elements based on params.gridSize
+// creates cells elements based on gridSize
 function createCell() {
-  let gridSize;
+  console.log("createCell() called, creating cells")
   let multiplier;
+  let gridSize;
   if (params.gridSize == "4x4") {
     gridSize = 4
     multiplier = 2
@@ -88,6 +93,7 @@ function createCell() {
 }
 
 function shuffleArray(array) {
+  console.log("shuffleArray(array) called, shuffling array")
   for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]]; // Swap elements
@@ -97,9 +103,9 @@ function shuffleArray(array) {
 
 function themeCells() {
   let numberOfCells = null
-  const theme = params.theme
   let cellsArr = document.querySelectorAll(".cell")
   let shuffledCells = shuffleArray(Array.from(cellsArr))  // randomized cell elements
+  console.log("shuffleArray() finished running, cellsArr(cell elements) shuffled")
 
   if (params.gridSize == "4x4") {
     numberOfCells = 16
@@ -108,29 +114,31 @@ function themeCells() {
   }
 
   let cellValueArr = []
-  if (theme == "numbers") {
+  if (params.theme == "numbers") {
     for (let i = 1; i <= (numberOfCells/2); i++) {
       cellValueArr.push(i)
     }
-  } else if (theme == "icons") {
+  } else if (params.theme == "icons") {
     for (let i = 0; i <= (numberOfCells/2) - 1; i++) {
       cellValueArr.push(icons[i])
     }
   }
   cellValueArr = cellValueArr.concat(cellValueArr)  // double length of cellValueArr to match length of cells
 
-  // setting value for cells in randomly
+  // setting value for cells
   for (let i = 0; i <= numberOfCells - 1; i++) {
-    if (theme == "numbers") {
+    if (params.theme == "numbers") {
       shuffledCells[i].innerHTML = cellValueArr[i]
-    } else if (theme == "icons") {
+    } else if (params.theme == "icons") {
       shuffledCells[i].innerHTML = `<img class="cell-icon" src="${cellValueArr[i]}" alt="${cellValueArr[i]}">`
     }
   }
+  console.log("finished themecells()")
 }
-// <img src="" alt="">
+
 // creating overlay on every cell
-function createCellOverlay () {
+function createCellOverlay() {
+  console.log("createCellOverlay() called")
   document.querySelectorAll(".cell").forEach(el => {
     let cellOverlay = document.createElement("div")
     cellOverlay.classList.add("cell-overlay")
@@ -141,7 +149,8 @@ function createCellOverlay () {
 
 // self explainatory
 function selectCurrentPlayer() {
-  if (!currentPlayer || currentPlayer == 4) {
+  console.log("selectCurrentPlayer() called")
+  if (!currentPlayer || currentPlayer == params.numberOfPlayers) {
     currentPlayer = 0
   }
   currentPlayer += 1
@@ -149,29 +158,35 @@ function selectCurrentPlayer() {
 
 // changes color of related .player-p to indicate the current player
 function highlightCurrentPlayer() {
-  for (let i = 1; i <= numberOfPlayers; i++) {
+  console.log("highlightCurrentPlayer() called")
+  for (let i = 1; i <= params.numberOfPlayers; i++) {
     if (i == currentPlayer) {
-      document.getElementById(`player-${i}-p`).style.color = rgb(62, 123, 39)
+      document.getElementById(`player-${i}-p`).style.color = "green"
     } else {
-      document.getElementById(`player-${i}-p`).style.color = black      
+      document.getElementById(`player-${i}-p`).style.color = "black"
     }
   }
 }
 
 // removes overlay of cell when clicked
 function hideOverlay() {
+  console.log("hideOverlay() called")
   document.querySelectorAll(".cell-overlay").forEach(cellOverlay => {
     cellOverlay.addEventListener("click", function() {
       cellOverlay.classList.add("cell-overlay-remove")
+      console.log("about to call call-startTimer() using dispatchEvent")
+      startTimer()
+      // document.dispatchEvent(new Event("call-startTimer()"))  // self explainetory
     })
   })
 }
 
 // extracting the two selected cells. their contents will be extracted and compared in next functions
 function extractPairSelectedCells() {
+  console.log("extractPairSelectedCells() called")
   document.querySelectorAll(".cell-overlay").forEach(cellOverlay => {
     cellOverlay.addEventListener("click", function() {
-        // extracting selected cell
+      // extracting selected cell
       let selectedCell = cellOverlay.parentElement; 
 
       // if no cell is clicked, newly clicked cell gets pushed to selectedCells
@@ -180,7 +195,9 @@ function extractPairSelectedCells() {
         selectedCells.push(selectedCell)
       } else if (selectedCells.length == 1) {
         selectedCells.push(selectedCell)
-        document.dispatchEvent(new Event("call-extractCellsContents()"))
+        console.log("about to call extractCellsContents() using dispatchEvent")
+        extractCellsContents()
+        // document.dispatchEvent(new Event("call-extractCellsContents()"))
         selectedCells = []
         selectedCellsContents = []
       }
@@ -190,6 +207,7 @@ function extractPairSelectedCells() {
 
 // extracting contents of selctedCells
 function extractCellsContents() {
+  console.log("extractCellsContents() called")
   for (let cell of selectedCells) {
     if (params.theme == "numbers") {
       selectedCellsContents.push(cell.textContent)
@@ -199,14 +217,23 @@ function extractCellsContents() {
   }
   // this dispatchevent causes checkSimilarity() to get called without directly getting called from inside of current function
   // helps modularity
-  document.dispatchEvent(new Event("call-checkSimilarity()"))
+  console.log("about to call checkSimilarity() using dispatchEvent")
+  checkSimilarity()
+  // document.dispatchEvent(new Event("call-checkSimilarity()"))
 }
 
 // compairing the two selected cells for their similarity
 function checkSimilarity() {
-  document.dispatchEvent(new Event("call-selectCurrentPlayer()"))
-  document.dispatchEvent(new Event("call-highlightCurrentPlayer()"))
-  document.dispatchEvent(new Event("call-countMoves()"))
+  console.log("checkSimilarity() called")
+  console.log("about to call countMoves() using dispatchEvent")
+  countMoves()
+  // document.dispatchEvent(new Event("call-countMoves()"))
+  console.log("about to call selectCurrentPlayer() using dispatchEvent")
+  selectCurrentPlayer()
+  // document.dispatchEvent(new Event("call-selectCurrentPlayer()"))
+  console.log("about to call highlightCurrentPlayer() using dispatchEvent")
+  highlightCurrentPlayer()
+  // document.dispatchEvent(new Event("call-highlightCurrentPlayer()"))
   if (selectedCellsContents[0] != selectedCellsContents[1]) {
     for (let cell of selectedCells) {
       setTimeout(() => {
@@ -221,11 +248,13 @@ function checkSimilarity() {
     }
   } else {
     checkWin()
+    // document.dispatchEvent(new Event("call-checkWin()", checkWin))
   }
 }
 
 // player stats (moves and timer) are display: none by default, their display change to flex based on the number of players selected on index.html
 function displayPlayersStats() {
+  console.log("displayPlayersStats() called")
   for (let i = 1; i <= params.numberOfPlayers; i++) {
     document.getElementById(`player-${i}-row`).style.display = "flex"
   }
@@ -233,37 +262,105 @@ function displayPlayersStats() {
 
 // count number of moves player has played
 function countMoves() {
+  console.log("countMoves() called")
   document.getElementById(`moves-number-${currentPlayer}`).innerHTML =
     +document.getElementById(`moves-number-${currentPlayer}`).innerHTML + 1
 }
 
+// creates timers for each player
+function createTimer() {
+  console.log("createTimer() called")
+  for (let i = 1; i <= params.numberOfPlayers; i++) {
+    timers[i] = 0
+  }
+}
+
+// converts gameStarted to true and calls timer()
+function startTimer() {
+  console.log("startTimer() called")
+  if (!gameStarted) {
+    gameStarted = true
+    console.log("about to call timer() using dispatchEvent")
+    timer()
+    // document.dispatchEvent(new Event("call-timer()"))  
+  }
+}
+
+
 function timer() {
-  setInterval(() => {
-    seconds++
-    let formattedTime = formatTimer()
-    displayTimer(formattedTime)
+  console.log("timer() called")
+  intervalId = setInterval(() => {
+    timers[currentPlayer]++
+    console.log("about to call formatTimer() using dispatchEvent")
+    formatTimer()
+    // document.dispatchEvent(new Event("call-formatTimer()"))
   }, 1000)
 }
 
+// changes format of time to 00:00:00
 function formatTimer() {
-  let hrs = Math.floor(seconds / 3600)
-  let mins = Math.floor((seconds % 3600) / 60)
-  let secsRemaining = Math.floor(seconds % 60)
-  return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secsRemaining.toString().padStart(2, '0')}`;
+  const toBeFarmatted = timers[currentPlayer]
+  let hrs = Math.floor(toBeFarmatted / 3600)
+  let mins = Math.floor((toBeFarmatted % 3600) / 60)
+  let secsRemaining = Math.floor(toBeFarmatted % 60)
+  const formatted = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secsRemaining.toString().padStart(2, '0')}`;
+  document.getElementById(`timer-number-${currentPlayer}`).innerHTML = formatted
 }
 
-function displayTimer(formattedTime) {
-  document.getElementById("timer-number").innerHTML = formattedTime
+function stopTimer() {
+    clearInterval(intervalId); // Clear the interval using the interval ID
+    console.log("timer stopped");
+}
+
+// when reset button is clicked
+function reset() {
+  console.log("reset() called")
+  document.getElementById("reset-btn").addEventListener("click", () => {
+    const queryString = `?theme=${encodeURIComponent(params.theme)}&numberOfPlayers=${encodeURIComponent(params.numberOfPlayers)}&gridSize=${encodeURIComponent(params.gridSize)}`
+    window.location.href = "gamepage.html" + queryString
+    // selectedCells = []
+    // selectedCellsContents = []
+    // seconds = 0
+    // currentPlayer = null  
+    // timers = {}
+    // gameStarted = false
+    // stopTimer()
+    // resetStats()
+  
+    // themeCells()
+    // createCellOverlay()
+    // hideOverlay()
+    // selectCurrentPlayer()
+    // // document.dispatchEvent(new Event("call-selectCurrentPlayer()"))
+    // highlightCurrentPlayer()
+    // // document.dispatchEvent(new Event("call-highlightCurrentPlayer()"))
+    // createTimer()
+    // startTimer()
+    // // document.dispatchEvent(new Event("call-startTimer()"))
+  })
+}
+
+// reset timers and move counters to 0, when reset button is clicked
+function resetStats() {
+  document.querySelectorAll(".moves-number").forEach(el => el.innerHTML = 0)
+  document.querySelectorAll(".timer-number").forEach(el => el.innerHTML = "00:00:00")
 }
 
 function checkWin() {
+  console.log("checkWin() called")
   let numberOfAllCells = document.querySelectorAll(".cell-overlay").length
   let numberOfrevealedCells = document.querySelectorAll(".cell-overlay-remove").length
-  console.log(numberOfAllCells)
-  console.log(numberOfrevealedCells)
   if (numberOfAllCells == numberOfrevealedCells) {
-    alert("you won")
+    // waiting 0.5s (for no reason), and then getting redirected to winpage.html
+    sleep(500, () => {
+      window.location.href = "winpage.html"
+    });
   }
+}
+
+// to sleep a certain period of time
+function sleep(ms, callback) {
+  setTimeout(callback, ms);
 }
 
 // Call functions section
@@ -272,13 +369,74 @@ const params = getQueryParam();
 createCell()
 themeCells()
 createCellOverlay()
+selectCurrentPlayer()
+highlightCurrentPlayer()
 hideOverlay()
-document.addEventListener("call-extractCellsContents()", extractCellsContents)  // related to dispatchEvent inside extractPairSelectedCells()
-document.addEventListener("call-checkSimilarity()", checkSimilarity)  // related to dispatchEvent inside extractCellsContents()
+// document.addEventListener("call-extractCellsContents()", extractCellsContents)  // related to dispatchEvent inside extractPairSelectedCells()
+// document.addEventListener("call-checkSimilarity()", checkSimilarity)  // related to dispatchEvent inside extractCellsContents()
 displayPlayersStats()
-document.addEventListener("call-selectCurrentPlayer()", selectCurrentPlayer)  // related to dispatchEvent inside checkSimilarity()
-document.addEventListener("call-highlightCurrentPlayer()", highlightCurrentPlayer)  // related to dispatchEvent inside checkSimilarity()
-document.addEventListener("call-countMoves()", countMoves)  // related to dispatchEvent inside checkSimilarity()
+createTimer()
+// document.addEventListener("call-countMoves()", countMoves)  // related to dispatchEvent inside checkSimilarity()
+// document.addEventListener("call-startTimer()", startTimer)  // related to dispatchEvent inside hideOverlay()
+document.addEventListener("call-timer()", startTimer)  // related to dispatchEvent inside startTimer()
 extractPairSelectedCells()
-timer()
-document.addEventListener("call-checkWin()", checkWin)  // related to dispatchEvent inside checkSimilarity()
+// document.addEventListener("call-checkWin()", checkWin)  // related to dispatchEvent inside checkSimilarity()
+// document.addEventListener("call-selectCurrentPlayer()", selectCurrentPlayer)  // related to dispatchEvent inside checkSimilarity()
+// document.addEventListener("call-highlightCurrentPlayer()", highlightCurrentPlayer)  // related to dispatchEvent inside checkSimilarity()
+// document.addEventListener("call-timer()", timer)  // related to dispatchEvent inside checkSimilarity()
+// document.addEventListener("call-formatTimer()", formatTimer)  // related to dispatchEvent inside timer()
+reset()
+
+// document.addEventListener("call-startGame()", startGame)  // related to dispatchEvent inside hideOverlay()
+
+
+/*
+document.dispatchEvent(new Event("call-timer()"))
+// document.dispatchEvent(new Event("call-startGame()"))
+
+// // converts gameStarted to true as soon as the first cell is clicked
+// function startGame() {
+//   gameStarted = true
+//   document.dispatchEvent(new Event("call-timer()"))
+//   console.log(gameStarted)
+// }
+
+// counts the time for each player
+function timer() {
+  previousPlayerTime = check
+  setInterval(() => {
+    seconds++
+    console.log(timers)
+  }, 1000)
+  timers[currentPlayer] += seconds
+}
+
+createTimer()
+document.addEventListener("call-timer()", timer)
+
+*/
+//////////////////////////////////////////////////////////////////////
+// timer()
+// function timer() {
+//   setInterval(() => {
+//     seconds++
+//     extractPlayerTime()
+//     // let formattedTime = formatTimer()
+//     // displayTimer(formattedTime)
+//   }, 1000)
+// }
+
+// function extractPlayerTime() {
+//   let playerTime = document.getElementById(`timer-number-${currentPlayer}`).innerHTML
+  // console.log(playerTime)
+// }
+// function formatTimer() {
+//   let hrs = Math.floor(seconds / 3600)
+//   let mins = Math.floor((seconds % 3600) / 60)
+//   let secsRemaining = Math.floor(seconds % 60)
+//   return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secsRemaining.toString().padStart(2, '0')}`;
+// }
+
+// function displayTimer(formattedTime) {
+//   document.getElementById(`timer-number-${currentPlayer}`).innerHTML = formattedTime
+// }
