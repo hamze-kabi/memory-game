@@ -15,12 +15,12 @@ This is a solution to the [Memory game challenge on Frontend Mentor](https://www
 
 ### Screenshot
 
-![screenshots\memory-game-scrennshots-mixed.jpg](screenshots\memory-game-scrennshots-mixed.jpg)
+![https://github.com/hamze-kabi/memory-game/blob/8bff806ffa42efdc2a9a5e6dad6d255302de684d/screenshots/memory-game-scrennshots-mixed.jpg](https://github.com/hamze-kabi/memory-game/blob/8bff806ffa42efdc2a9a5e6dad6d255302de684d/screenshots/memory-game-scrennshots-mixed.jpg)
 
 ### Links
 
 - Solution URL: [index.html](index.html)
-- Live Site URL: [https://hamze-kabi.github.io/product-list-with-cart/](https://hamze-kabi.github.io/product-list-with-cart/)
+- Live Site URL: [https://hamze-kabi.github.io/memory-game/](https://hamze-kabi.github.io/memory-game/)
 
 ## My process
 
