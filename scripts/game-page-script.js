@@ -3,10 +3,13 @@
 let selectedCells = []  // cells that get selected by mouse click
 let selectedCellsContents = []  // content of cells that get selected by mouse click
 let seconds = 0 // to be converted to 00:00:00 and displayed
+let tempCurrentPlayer = 0 // one player before current player(to be used in increaseScore())
 let currentPlayer = null  // current player to calculate its stats
 let timers = {} // an object containing timer of each gamer
 let gameStarted = false // as soon as the first player clicks, it converts to true and timer starts working
 let intervalId;
+let playersRanked = []
+let queryString;
 
 // addresses of icons
 const icons = [
@@ -228,6 +231,7 @@ function checkSimilarity() {
   console.log("about to call countMoves() using dispatchEvent")
   countMoves()
   // document.dispatchEvent(new Event("call-countMoves()"))
+  tempCurrentPlayer = currentPlayer
   console.log("about to call selectCurrentPlayer() using dispatchEvent")
   selectCurrentPlayer()
   // document.dispatchEvent(new Event("call-selectCurrentPlayer()"))
@@ -247,6 +251,7 @@ function checkSimilarity() {
       }, 500)
     }
   } else {
+    increaseScore()
     checkWin()
     // document.dispatchEvent(new Event("call-checkWin()", checkWin))
   }
@@ -265,6 +270,11 @@ function countMoves() {
   console.log("countMoves() called")
   document.getElementById(`moves-number-${currentPlayer}`).innerHTML =
     +document.getElementById(`moves-number-${currentPlayer}`).innerHTML + 1
+}
+
+function increaseScore() {
+  document.getElementById(`score-number-${tempCurrentPlayer}`).innerHTML =
+    +document.getElementById(`score-number-${tempCurrentPlayer}`).innerHTML + 1
 }
 
 // creates timers for each player
@@ -307,10 +317,10 @@ function formatTimer() {
   document.getElementById(`timer-number-${currentPlayer}`).innerHTML = formatted
 }
 
-function stopTimer() {
-    clearInterval(intervalId); // Clear the interval using the interval ID
-    console.log("timer stopped");
-}
+// function stopTimer() {
+//     clearInterval(intervalId); // Clear the interval using the interval ID
+//     console.log("timer stopped");
+// }
 
 // when reset button is clicked
 function reset() {
@@ -318,32 +328,89 @@ function reset() {
   document.getElementById("reset-btn").addEventListener("click", () => {
     const queryString = `?theme=${encodeURIComponent(params.theme)}&numberOfPlayers=${encodeURIComponent(params.numberOfPlayers)}&gridSize=${encodeURIComponent(params.gridSize)}`
     window.location.href = "gamepage.html" + queryString
-    // selectedCells = []
-    // selectedCellsContents = []
-    // seconds = 0
-    // currentPlayer = null  
-    // timers = {}
-    // gameStarted = false
-    // stopTimer()
-    // resetStats()
-  
-    // themeCells()
-    // createCellOverlay()
-    // hideOverlay()
-    // selectCurrentPlayer()
-    // // document.dispatchEvent(new Event("call-selectCurrentPlayer()"))
-    // highlightCurrentPlayer()
-    // // document.dispatchEvent(new Event("call-highlightCurrentPlayer()"))
-    // createTimer()
-    // startTimer()
-    // // document.dispatchEvent(new Event("call-startTimer()"))
   })
 }
 
-// reset timers and move counters to 0, when reset button is clicked
-function resetStats() {
-  document.querySelectorAll(".moves-number").forEach(el => el.innerHTML = 0)
-  document.querySelectorAll(".timer-number").forEach(el => el.innerHTML = "00:00:00")
+function newGame() {
+  document.getElementById("new-game-btn").addEventListener("click", () => {
+    window.location.href = "index.html"
+  })
+}
+
+// // reset timers and move counters to 0, when reset button is clicked
+// function resetStats() {
+//   document.querySelectorAll(".moves-number").forEach(el => el.innerHTML = 0)
+//   document.querySelectorAll(".timer-number").forEach(el => el.innerHTML = "00:00:00")
+// }
+
+// document.getElementById("score-number-2").innerHTML = 3
+// document.getElementById("score-number-4").innerHTML = 4
+// document.getElementById("score-number-1").innerHTML = 30
+// document.getElementById("score-number-3").innerHTML = 40
+// document.getElementById("moves-number-2").innerHTML = 2
+// document.getElementById("moves-number-4").innerHTML = 3
+// document.getElementById("timer-number-2").innerHTML = "00:00:09"
+// document.getElementById("timer-number-4").innerHTML = "00:00:07"
+
+// ranks players based on the following(priority high to low): score(more better), moves(less better), timer(less better)
+function rankPlayers() {
+  console.log("rankPlayers() called")
+  for (let i = 1; i <= params.numberOfPlayers; i++) {
+    let score = +document.getElementById(`score-number-${i}`).innerHTML
+    let moves = +document.getElementById(`moves-number-${i}`).innerHTML
+    let timer = document.getElementById(`timer-number-${i}`).innerHTML
+    timer = convertToSeconds(timer)
+    playersRanked.push([i, score, moves, timer])
+  }
+  if (playersRanked.length > 1) {
+    for (let i = playersRanked.length - 1; i > 0 ; i--) {
+      playersRanked.sort((a, b) => {
+        if (i == 1) {
+          return b[i] - a[i]
+        } else {
+          return a[i] - b[i]
+        }
+      })
+    }
+  }
+}
+
+function convertToSeconds(str) {
+console.log("convertToSeconds(str) called")
+  const [hours, minutes, seconds] = str.split(":").map(Number)
+  return (hours * 3600) + (minutes * 60) + (seconds)
+}
+
+// // if the are winners with similar scores, this function picks the one with less time
+// function checkSimilarScores() {
+//   let similarScores = []
+//   similarScores.push(playersRanked[0])
+//   for (let i = 1; i < params.numberOfPlayers; i++)
+//     if (playersRanked[i][1] == playersRanked[0][1]) {
+//       similarScores.push(playersRanked[i])
+//     }
+//   if (similarScores.length > 1) {
+//     for (let similarScore of similarScores) {
+//       let toBeConvertedToSeconds = document.getElementById(`timer-number-${similarScore[0][similarScore[0].length-1]}`).innerHTML
+//       // console.log(document.getElementById(`timer-number-${similarScore[0][similarScore[0].length-1]}`).innerHTML)
+//       // console.log(similarScore[0][similarScore[0].length-1])      
+//       let convertedToSeconds = convertToSeconds(toBeConvertedToSeconds)
+//       console.log(convertedToSeconds)
+//     }
+//     console.log(similarScores)
+//   }  
+// }
+// playersRanked.push([i, score, moves, timer])
+function constructQueryString() {
+  console.log("constructQueryString() called")
+  queryString = `?`
+  for (let i = 0; i < params.numberOfPlayers; i++) {
+    // const queryString = `?theme=${encodeURIComponent(theme)}&numberOfPlayers=${encodeURIComponent(numberOfPlayers)}&gridSize=${encodeURIComponent(gridSize)}`    
+    queryString += `player=${playersRanked[i][0]}&score=${playersRanked[i][1]}&moves=${playersRanked[i][2]}&timer=${playersRanked[i][3]}`
+    if (i != params.numberOfPlayers - 1) {
+      queryString += "|"
+    }
+  }
 }
 
 function checkWin() {
@@ -351,9 +418,11 @@ function checkWin() {
   let numberOfAllCells = document.querySelectorAll(".cell-overlay").length
   let numberOfrevealedCells = document.querySelectorAll(".cell-overlay-remove").length
   if (numberOfAllCells == numberOfrevealedCells) {
+    rankPlayers()
+    constructQueryString()
     // waiting 0.5s (for no reason), and then getting redirected to winpage.html
     sleep(500, () => {
-      window.location.href = "winpage.html"
+      window.location.href = "winpage.html" + queryString
     });
   }
 }
@@ -386,9 +455,10 @@ extractPairSelectedCells()
 // document.addEventListener("call-timer()", timer)  // related to dispatchEvent inside checkSimilarity()
 // document.addEventListener("call-formatTimer()", formatTimer)  // related to dispatchEvent inside timer()
 reset()
-
+newGame()
 // document.addEventListener("call-startGame()", startGame)  // related to dispatchEvent inside hideOverlay()
 
+// checkSimilarScores()
 
 /*
 document.dispatchEvent(new Event("call-timer()"))

@@ -7,35 +7,16 @@
 </head>
 <body>
   <script>
-    let yo = 0;
-    let intervalId; // Declare a variable to store the interval ID
-
-    function timer() {
-        console.log("timer() called");
-        intervalId = setInterval(() => {
-            yo++;
-            console.log(yo);
-        }, 1000);
+    let a = [[2, 1, 1], [1, 2, 2]]
+    for (let i = a.length - 1; i > -1 ; i--) {
+      a.sort((a, b) => {
+        return b[i] - a[i]
+      })
     }
-
-    function stopTimer() {
-        clearInterval(intervalId); // Clear the interval using the interval ID
-        yo = 0
-        console.log("timer stopped");
-    }
-
-    function timer2() {
-        setTimeout(() => {
-            stopTimer();
-            timer(); // Start the timer again
-        }, 5000);
-    }
-
-    // Start the timer
-    timer();
-    // Stop and restart the timer after 5 seconds
-    timer2();
-    
+    // a.sort((a, b) => {
+    //   return b - a
+    // })
+    console.log(a)
   </script>
 </body>
 </html>
