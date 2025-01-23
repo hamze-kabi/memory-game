@@ -17,10 +17,12 @@ body {
 }
 
 #players-stats > .player-stat-row:first-child {
-  transform: scale(1.3);
   background-color: lightyellow;
 }
 
+#players-stats .player-stat-row:first-child .player-p {
+  color: blue;
+}
 
 .player-stat-row {
   display: flex;
