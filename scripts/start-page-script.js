@@ -1,5 +1,6 @@
 "use strict"
 
+// getting the entered parameters
 document.getElementById("setting-form").addEventListener("submit", function(event) {
   console.log("setting-form submitted")
   event.preventDefault()
@@ -24,6 +25,6 @@ document.getElementById("setting-form").addEventListener("submit", function(even
     alert(errorMessage)
   } else {
     const queryString = `?theme=${encodeURIComponent(theme)}&numberOfPlayers=${encodeURIComponent(numberOfPlayers)}&gridSize=${encodeURIComponent(gridSize)}`
-    window.location.href = "gamepage.html" + queryString
+    window.location.href = "gamepage.html" + queryString  //  parameters get passed with url to the next page
   }
 })

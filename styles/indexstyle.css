@@ -26,7 +26,6 @@ h1 {
 
 p {
   color: silver;
-  /* font-size: large; */
 }
 
 .btn-section {
@@ -61,11 +60,6 @@ label:has(input[type="radio"]:checked) {
   color: white; /* Optional: Change text color for better visibility */
 }
 
-
-/* #submit {
-  display: block;
-} */
-
 #submit {
   margin: 1rem 25% auto;
   align-items: center;
@@ -95,7 +89,6 @@ label:has(input[type="radio"]:checked) {
   touch-action: manipulation;
   white-space: nowrap;
   will-change: box-shadow,transform;
-  /* font-size: clamp(1.5rem, 5vw, 3.5rem); */
 }
 
 #submit:focus {

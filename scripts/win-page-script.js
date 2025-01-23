@@ -2,6 +2,7 @@
 let playersRanked = []
 let playersStats = {}
 
+// extract the players stats that is passed by url
 function getPlayersStats() {
   console.log("getPlayersStats() called")
   const stats = {}
@@ -24,6 +25,7 @@ function getPlayersStats() {
   })
 }
 
+// formats seconds to hr:min:sec 00:00:00
 function formatTimer(toBeFarmatted) {
   let hrs = Math.floor(toBeFarmatted / 3600)
   let mins = Math.floor((toBeFarmatted % 3600) / 60)
@@ -31,7 +33,8 @@ function formatTimer(toBeFarmatted) {
   const formatted = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secsRemaining.toString().padStart(2, '0')}`;
   return formatted
 }
-////////////////////////// fix here
+
+// creates stats elements
 function displayRankings() {
   let playersStatsSection = document.getElementById("players-stats")
   playersRanked.forEach(player => {
@@ -45,7 +48,6 @@ function displayRankings() {
   })
 }
 
+// calling functions
 getPlayersStats()
-// console.log(playersRanked)
-// console.log(playersStats)
 displayRankings()

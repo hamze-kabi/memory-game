@@ -7,9 +7,9 @@ let tempCurrentPlayer = 0 // one player before current player(to be used in incr
 let currentPlayer = null  // current player to calculate its stats
 let timers = {} // an object containing timer of each gamer
 let gameStarted = false // as soon as the first player clicks, it converts to true and timer starts working
-let intervalId;
-let playersRanked = []
-let queryString;
+let intervalId; // belongs to timer()
+let playersRanked = []  //  belongs to rankPlayers()
+let queryString;  //  used to pass info to next page with url
 
 // addresses of icons
 const icons = [
@@ -104,6 +104,7 @@ function shuffleArray(array) {
   return array;
 }
 
+// themes(sets value of) cells based on params.theme 
 function themeCells() {
   let numberOfCells = null
   let cellsArr = document.querySelectorAll(".cell")
@@ -139,7 +140,7 @@ function themeCells() {
   console.log("finished themecells()")
 }
 
-// creating overlay on every cell
+// creating overlay on every cell, overlay hides the cells
 function createCellOverlay() {
   console.log("createCellOverlay() called")
   document.querySelectorAll(".cell").forEach(el => {
@@ -179,7 +180,6 @@ function hideOverlay() {
       cellOverlay.classList.add("cell-overlay-remove")
       console.log("about to call call-startTimer() using dispatchEvent")
       startTimer()
-      // document.dispatchEvent(new Event("call-startTimer()"))  // self explainetory
     })
   })
 }
@@ -200,7 +200,6 @@ function extractPairSelectedCells() {
         selectedCells.push(selectedCell)
         console.log("about to call extractCellsContents() using dispatchEvent")
         extractCellsContents()
-        // document.dispatchEvent(new Event("call-extractCellsContents()"))
         selectedCells = []
         selectedCellsContents = []
       }
@@ -222,7 +221,6 @@ function extractCellsContents() {
   // helps modularity
   console.log("about to call checkSimilarity() using dispatchEvent")
   checkSimilarity()
-  // document.dispatchEvent(new Event("call-checkSimilarity()"))
 }
 
 // compairing the two selected cells for their similarity
@@ -230,14 +228,11 @@ function checkSimilarity() {
   console.log("checkSimilarity() called")
   console.log("about to call countMoves() using dispatchEvent")
   countMoves()
-  // document.dispatchEvent(new Event("call-countMoves()"))
   tempCurrentPlayer = currentPlayer
   console.log("about to call selectCurrentPlayer() using dispatchEvent")
   selectCurrentPlayer()
-  // document.dispatchEvent(new Event("call-selectCurrentPlayer()"))
   console.log("about to call highlightCurrentPlayer() using dispatchEvent")
   highlightCurrentPlayer()
-  // document.dispatchEvent(new Event("call-highlightCurrentPlayer()"))
   if (selectedCellsContents[0] != selectedCellsContents[1]) {
     for (let cell of selectedCells) {
       setTimeout(() => {
@@ -253,7 +248,6 @@ function checkSimilarity() {
   } else {
     increaseScore()
     checkWin()
-    // document.dispatchEvent(new Event("call-checkWin()", checkWin))
   }
 }
 
@@ -273,6 +267,7 @@ function countMoves() {
 }
 
 function increaseScore() {
+  console.log("increaseScore() called")
   document.getElementById(`score-number-${tempCurrentPlayer}`).innerHTML =
     +document.getElementById(`score-number-${tempCurrentPlayer}`).innerHTML + 1
 }
@@ -292,10 +287,8 @@ function startTimer() {
     gameStarted = true
     console.log("about to call timer() using dispatchEvent")
     timer()
-    // document.dispatchEvent(new Event("call-timer()"))  
   }
 }
-
 
 function timer() {
   console.log("timer() called")
@@ -303,12 +296,12 @@ function timer() {
     timers[currentPlayer]++
     console.log("about to call formatTimer() using dispatchEvent")
     formatTimer()
-    // document.dispatchEvent(new Event("call-formatTimer()"))
   }, 1000)
 }
 
-// changes format of time to 00:00:00
+// changes format of time to hr:min:sec 00:00:00 format
 function formatTimer() {
+  console.log("formatTimer() called")
   const toBeFarmatted = timers[currentPlayer]
   let hrs = Math.floor(toBeFarmatted / 3600)
   let mins = Math.floor((toBeFarmatted % 3600) / 60)
@@ -316,11 +309,6 @@ function formatTimer() {
   const formatted = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secsRemaining.toString().padStart(2, '0')}`;
   document.getElementById(`timer-number-${currentPlayer}`).innerHTML = formatted
 }
-
-// function stopTimer() {
-//     clearInterval(intervalId); // Clear the interval using the interval ID
-//     console.log("timer stopped");
-// }
 
 // when reset button is clicked
 function reset() {
@@ -332,25 +320,11 @@ function reset() {
 }
 
 function newGame() {
+  console.log("newGame() called")
   document.getElementById("new-game-btn").addEventListener("click", () => {
     window.location.href = "index.html"
   })
 }
-
-// // reset timers and move counters to 0, when reset button is clicked
-// function resetStats() {
-//   document.querySelectorAll(".moves-number").forEach(el => el.innerHTML = 0)
-//   document.querySelectorAll(".timer-number").forEach(el => el.innerHTML = "00:00:00")
-// }
-
-// document.getElementById("score-number-2").innerHTML = 3
-// document.getElementById("score-number-4").innerHTML = 4
-// document.getElementById("score-number-1").innerHTML = 30
-// document.getElementById("score-number-3").innerHTML = 40
-// document.getElementById("moves-number-2").innerHTML = 2
-// document.getElementById("moves-number-4").innerHTML = 3
-// document.getElementById("timer-number-2").innerHTML = "00:00:09"
-// document.getElementById("timer-number-4").innerHTML = "00:00:07"
 
 // ranks players based on the following(priority high to low): score(more better), moves(less better), timer(less better)
 function rankPlayers() {
@@ -375,43 +349,25 @@ function rankPlayers() {
   }
 }
 
+// converts string of hr:min:sec to seconds in number
 function convertToSeconds(str) {
 console.log("convertToSeconds(str) called")
   const [hours, minutes, seconds] = str.split(":").map(Number)
   return (hours * 3600) + (minutes * 60) + (seconds)
 }
 
-// // if the are winners with similar scores, this function picks the one with less time
-// function checkSimilarScores() {
-//   let similarScores = []
-//   similarScores.push(playersRanked[0])
-//   for (let i = 1; i < params.numberOfPlayers; i++)
-//     if (playersRanked[i][1] == playersRanked[0][1]) {
-//       similarScores.push(playersRanked[i])
-//     }
-//   if (similarScores.length > 1) {
-//     for (let similarScore of similarScores) {
-//       let toBeConvertedToSeconds = document.getElementById(`timer-number-${similarScore[0][similarScore[0].length-1]}`).innerHTML
-//       // console.log(document.getElementById(`timer-number-${similarScore[0][similarScore[0].length-1]}`).innerHTML)
-//       // console.log(similarScore[0][similarScore[0].length-1])      
-//       let convertedToSeconds = convertToSeconds(toBeConvertedToSeconds)
-//       console.log(convertedToSeconds)
-//     }
-//     console.log(similarScores)
-//   }  
-// }
-// playersRanked.push([i, score, moves, timer])
+// the querystring is used to pass info to next page
 function constructQueryString() {
   console.log("constructQueryString() called")
   queryString = `?`
   for (let i = 0; i < params.numberOfPlayers; i++) {
-    // const queryString = `?theme=${encodeURIComponent(theme)}&numberOfPlayers=${encodeURIComponent(numberOfPlayers)}&gridSize=${encodeURIComponent(gridSize)}`    
     queryString += `player=${playersRanked[i][0]}&score=${playersRanked[i][1]}&moves=${playersRanked[i][2]}&timer=${playersRanked[i][3]}`
     if (i != params.numberOfPlayers - 1) {
       queryString += "|"
     }
   }
 }
+
 
 function checkWin() {
   console.log("checkWin() called")
@@ -429,6 +385,7 @@ function checkWin() {
 
 // to sleep a certain period of time
 function sleep(ms, callback) {
+  console.log("timer() called")
   setTimeout(callback, ms);
 }
 
@@ -441,72 +398,9 @@ createCellOverlay()
 selectCurrentPlayer()
 highlightCurrentPlayer()
 hideOverlay()
-// document.addEventListener("call-extractCellsContents()", extractCellsContents)  // related to dispatchEvent inside extractPairSelectedCells()
-// document.addEventListener("call-checkSimilarity()", checkSimilarity)  // related to dispatchEvent inside extractCellsContents()
 displayPlayersStats()
 createTimer()
-// document.addEventListener("call-countMoves()", countMoves)  // related to dispatchEvent inside checkSimilarity()
-// document.addEventListener("call-startTimer()", startTimer)  // related to dispatchEvent inside hideOverlay()
 document.addEventListener("call-timer()", startTimer)  // related to dispatchEvent inside startTimer()
 extractPairSelectedCells()
-// document.addEventListener("call-checkWin()", checkWin)  // related to dispatchEvent inside checkSimilarity()
-// document.addEventListener("call-selectCurrentPlayer()", selectCurrentPlayer)  // related to dispatchEvent inside checkSimilarity()
-// document.addEventListener("call-highlightCurrentPlayer()", highlightCurrentPlayer)  // related to dispatchEvent inside checkSimilarity()
-// document.addEventListener("call-timer()", timer)  // related to dispatchEvent inside checkSimilarity()
-// document.addEventListener("call-formatTimer()", formatTimer)  // related to dispatchEvent inside timer()
 reset()
 newGame()
-// document.addEventListener("call-startGame()", startGame)  // related to dispatchEvent inside hideOverlay()
-
-// checkSimilarScores()
-
-/*
-document.dispatchEvent(new Event("call-timer()"))
-// document.dispatchEvent(new Event("call-startGame()"))
-
-// // converts gameStarted to true as soon as the first cell is clicked
-// function startGame() {
-//   gameStarted = true
-//   document.dispatchEvent(new Event("call-timer()"))
-//   console.log(gameStarted)
-// }
-
-// counts the time for each player
-function timer() {
-  previousPlayerTime = check
-  setInterval(() => {
-    seconds++
-    console.log(timers)
-  }, 1000)
-  timers[currentPlayer] += seconds
-}
-
-createTimer()
-document.addEventListener("call-timer()", timer)
-
-*/
-//////////////////////////////////////////////////////////////////////
-// timer()
-// function timer() {
-//   setInterval(() => {
-//     seconds++
-//     extractPlayerTime()
-//     // let formattedTime = formatTimer()
-//     // displayTimer(formattedTime)
-//   }, 1000)
-// }
-
-// function extractPlayerTime() {
-//   let playerTime = document.getElementById(`timer-number-${currentPlayer}`).innerHTML
-  // console.log(playerTime)
-// }
-// function formatTimer() {
-//   let hrs = Math.floor(seconds / 3600)
-//   let mins = Math.floor((seconds % 3600) / 60)
-//   let secsRemaining = Math.floor(seconds % 60)
-//   return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secsRemaining.toString().padStart(2, '0')}`;
-// }
-
-// function displayTimer(formattedTime) {
-//   document.getElementById(`timer-number-${currentPlayer}`).innerHTML = formattedTime
-// }
